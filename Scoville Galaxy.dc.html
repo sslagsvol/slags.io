@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#07030F;overflow:hidden}
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+</helmet>
+<div data-screen-label="Heat Galaxy" style="position:relative;width:100vw;height:100vh;overflow:hidden;font-family:'Space Grotesk',Helvetica,Arial,sans-serif;background:radial-gradient(1100px 750px at 68% 28%,#170B33 0%,#0B0518 55%,#07030F 100%)">
+  <canvas ref="{{ canvasRef }}" style="position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab"></canvas>
+
+  <div data-screen-label="HUD" style="position:absolute;top:28px;left:32px;pointer-events:none">
+    <div style="font-size:26px;font-weight:700;letter-spacing:0.04em;background:linear-gradient(100deg,#38BDF8,#E879F9 55%,#FDBA74);-webkit-background-clip:text;background-clip:text;color:transparent">SCOVILLE³</div>
+    <div style="margin-top:6px;font-size:11px;letter-spacing:0.22em;color:rgba(214,204,255,0.72);text-transform:uppercase">Heat galaxy — best-guess SHU</div>
+    <div style="margin-top:4px;font-size:10px;letter-spacing:0.14em;color:rgba(160,150,210,0.55);text-transform:uppercase">{{ countLine }}</div>
+  </div>
+
+  <a href="Scoville Index.dc.html" style="position:absolute;top:28px;right:32px;display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.16);background:rgba(24,16,48,0.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#EDEAFB;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;text-decoration:none" style-hover="border:1px solid rgba(232,121,249,0.6);color:#FFFFFF">← Index view</a>
+
+  <div data-screen-label="Layout switcher" style="position:absolute;top:24px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px">
+    <div style="display:flex;gap:4px;padding:5px;border-radius:999px;border:1px solid rgba(255,255,255,0.14);background:rgba(20,12,42,0.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)">
+      <sc-for list="{{ modeChips }}" as="m" hint-placeholder-count="3">
+        <button onClick="{{ m.onPick }}" style="border:none;border-radius:999px;padding:8px 16px;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;cursor:pointer;font-family:inherit;background:{{ m.bg }};color:{{ m.fg }}">{{ m.label }}</button>
+      </sc-for>
+    </div>
+    <div style="font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(190,180,240,0.6);pointer-events:none;white-space:nowrap">{{ modeCaption }}</div>
+  </div>
+
+  <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Detail card" style="position:absolute;top:50%;right:32px;transform:translateY(-50%);width:290px;box-sizing:border-box;padding:26px 26px 24px;border-radius:22px;border:1px solid rgba(255,255,255,0.14);background:linear-gradient(160deg,rgba(38,22,74,0.66),rgba(16,8,34,0.6));backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 0 60px rgba(140,60,255,0.18),inset 0 1px 0 rgba(255,255,255,0.08)">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:9px;letter-spacing:0.2em;color:#C4B5FD;border:1px solid rgba(196,181,253,0.35);border-radius:999px;padding:4px 10px;text-transform:uppercase">{{ selTag }}</span>
+        <button onClick="{{ onClear }}" style="border:none;background:none;color:rgba(230,220,255,0.6);font-size:16px;cursor:pointer;padding:2px 6px;font-family:inherit">×</button>
+      </div>
+      <div style="margin-top:16px;font-size:22px;line-height:1.15;font-weight:700;color:#F4F1FF">{{ selName }}</div>
+      <div style="margin-top:6px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(196,186,240,0.6)">{{ selMaker }}</div>
+      <div style="margin-top:22px;font-size:9px;letter-spacing:0.22em;color:rgba(160,150,210,0.6)">BEST GUESS</div>
+      <div style="margin-top:4px;font-size:40px;font-weight:700;letter-spacing:-0.01em;background:linear-gradient(100deg,#38BDF8,#E879F9 55%,#FDBA74);-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums">{{ selShuFmt }}</div>
+      <div style="font-size:10px;letter-spacing:0.2em;color:rgba(196,186,240,0.55);margin-top:2px">SCOVILLE HEAT UNITS</div>
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);font-size:11px;letter-spacing:0.1em;color:#D9D2F5;text-transform:uppercase">{{ selRank }}</div>
+    </div>
+  </sc-if>
+
+  <div style="position:absolute;left:32px;bottom:30px;pointer-events:none">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:9px;letter-spacing:0.2em;color:rgba(125,211,252,0.8)">MILD</span>
+      <span style="width:150px;height:6px;border-radius:3px;background:linear-gradient(90deg,#38BDF8,#818CF8,#E879F9,#FB7185,#FDBA74)"></span>
+      <span style="font-size:9px;letter-spacing:0.2em;color:rgba(253,186,116,0.85)">REGRET</span>
+    </div>
+    <div style="margin-top:8px;font-size:9px;letter-spacing:0.16em;color:rgba(160,150,210,0.55);text-transform:uppercase">{{ legendLine }}</div>
+  </div>
+
+  <div style="position:absolute;bottom:30px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:0.22em;color:rgba(190,180,240,0.55);text-transform:uppercase;pointer-events:none;white-space:nowrap">Drag to orbit · Scroll to zoom · Click an orb</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;autoRotate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Scene&quot;},&quot;glowIntensity&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0.5,&quot;max&quot;:1.8,&quot;step&quot;:0.05,&quot;default&quot;:1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Scene&quot;},&quot;showBenchmarks&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Data&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.SAUCES = [
+      { id: 'tb-mild', name: 'Taco Bell Mild Sauce', maker: 'Taco Bell', cat: 'Benchmark', pack: null, guess: 400 },
+      { id: 'franks', name: "Frank's RedHot", maker: "McIlhenny/Frank's", cat: 'Benchmark', pack: null, guess: 450 },
+      { id: 'louisiana', name: 'Louisiana Hot Sauce', maker: 'Bruce Foods', cat: 'Benchmark', pack: null, guess: 450 },
+      { id: 'tb-hot', name: 'Taco Bell Hot Sauce', maker: 'Taco Bell', cat: 'Benchmark', pack: null, guess: 800 },
+      { id: 'cholula-jal', name: 'Cholula Jalapeño', maker: 'Cholula', cat: 'Benchmark', pack: null, guess: 1000 },
+      { id: 'cholula-chip', name: 'Cholula Chipotle', maker: 'Cholula', cat: 'Benchmark', pack: null, guess: 1500 },
+      { id: 'shishito', name: "That's What Shishito Said", maker: 'Down to Ferment', cat: 'Season 30 Pack', pack: 1, guess: 2000 },
+      { id: 'tb-diablo', name: 'Taco Bell Diablo Sauce', maker: 'Taco Bell', cat: 'Benchmark', pack: null, guess: 2000 },
+      { id: 'sriracha', name: 'Huy Fong Sriracha', maker: 'Huy Fong Foods', cat: 'Benchmark', pack: null, guess: 2200 },
+      { id: 'hot-bergine', name: 'Hot Bergine', maker: 'Good Heat', cat: 'Season 30 Pack', pack: 2, guess: 2500 },
+      { id: 'marie-sharps', name: "Marie Sharp's Original Hot Habanero", maker: "Marie Sharp's", cat: 'Benchmark', pack: null, guess: 3000 },
+      { id: 'tabasco', name: 'Tabasco Original', maker: 'McIlhenny Co.', cat: 'Benchmark', pack: null, guess: 3500 },
+      { id: 'pickled-garlic', name: 'Pickled Garlic Sriracha', maker: 'Hot Ones Hot Sauce', cat: 'Season 30 Pack', pack: 3, guess: 5000 },
+      { id: 'chickpotle', name: 'Chickpotle', maker: 'Black Eyed Susan', cat: 'Season 30 Pack', pack: 4, guess: 9000 },
+      { id: 'tropical-amarillo', name: 'Tropical Amarillo', maker: 'Hot Ones Hot Sauce', cat: 'Season 30 Pack', pack: 6, guess: 18000 },
+      { id: 'eight-dragon', name: '8 Dragon', maker: 'Sinai Gourmet', cat: 'Season 30 Pack', pack: 7, guess: 20000 },
+      { id: 'pikliz', name: 'Pikliz N Scorpion', maker: 'Hot N Saucy', cat: 'Season 30 Pack', pack: 5, guess: 25000 },
+      { id: 'xxx-salsa', name: 'XXX Salsa Vibes', maker: 'High Desert Sauce Co.', cat: 'Season 30 Pack', pack: 9, guess: 70000 },
+      { id: 'number-8', name: '"#8"', maker: 'Hot Ones Hot Sauce', cat: 'Season 30 Pack', pack: 8, guess: 150000 },
+      { id: 'last-dab', name: 'Last Dab Thermageddon', maker: 'Hot Ones Hot Sauce', cat: 'Season 30 Pack', pack: 10, guess: 150000 }
+    ];
+    this.state = { selectedId: null, hoverId: null, userSauces: [], mode: 'helix' };
+    this.canvasRef = React.createRef();
+    this.cur = {};
+    this.rotY = 0.6; this.rotX = 0.32; this.zoom = 1;
+    this.dragging = false; this.moved = 0; this.lastX = 0; this.lastY = 0;
+    this.projected = [];
+    this.dpr = 1;
+    this.STOPS = [[56, 189, 248], [129, 140, 248], [232, 121, 249], [251, 113, 133], [253, 186, 116]];
+    this.stars = [];
+    for (let i = 0; i < 170; i++) {
+      const th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1), rr = 750 + Math.random() * 700;
+      this.stars.push({ x: rr * Math.sin(ph) * Math.cos(th), y: rr * Math.cos(ph) * 0.6, z: rr * Math.sin(ph) * Math.sin(th), a: 0.2 + Math.random() * 0.5 });
+    }
+  }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('scoville-index-v1');
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d.userSauces) this.setState({ userSauces: d.userSauces });
+      }
+    } catch (e) {}
+    const cv = this.canvasRef.current;
+    this.onDown = (e) => { this.dragging = true; this.moved = 0; this.lastX = e.clientX; this.lastY = e.clientY; if (cv) cv.style.cursor = 'grabbing'; };
+    this.onUp = () => { this.dragging = false; if (cv) cv.style.cursor = 'grab'; };
+    this.onMove = (e) => {
+      if (this.dragging) {
+        const dx = e.clientX - this.lastX, dy = e.clientY - this.lastY;
+        this.moved += Math.abs(dx) + Math.abs(dy);
+        this.rotY += dx * 0.005;
+        this.rotX = Math.max(0.02, Math.min(1.25, this.rotX + dy * 0.0035));
+        this.lastX = e.clientX; this.lastY = e.clientY;
+      }
+    };
+    this.onHover = (e) => {
+      if (this.dragging || !cv) return;
+      const r = cv.getBoundingClientRect();
+      const hit = this.pick(e.clientX - r.left, e.clientY - r.top);
+      const id = hit ? hit.id : null;
+      if (id !== this.state.hoverId) this.setState({ hoverId: id });
+      cv.style.cursor = hit ? 'pointer' : 'grab';
+    };
+    this.onClick = (e) => {
+      if (this.moved > 6 || !cv) return;
+      const r = cv.getBoundingClientRect();
+      const hit = this.pick(e.clientX - r.left, e.clientY - r.top);
+      this.setState({ selectedId: hit ? hit.id : null });
+    };
+    this.onWheel = (e) => {
+      e.preventDefault();
+      this.zoom = Math.max(0.45, Math.min(2.4, this.zoom * Math.exp(-e.deltaY * 0.001)));
+    };
+    this.onLeave = () => { if (this.state.hoverId) this.setState({ hoverId: null }); };
+    if (cv) {
+      cv.addEventListener('mousedown', this.onDown);
+      cv.addEventListener('mousemove', this.onHover);
+      cv.addEventListener('click', this.onClick);
+      cv.addEventListener('wheel', this.onWheel, { passive: false });
+      cv.addEventListener('mouseleave', this.onLeave);
+    }
+    window.addEventListener('mousemove', this.onMove);
+    window.addEventListener('mouseup', this.onUp);
+    this.raf = requestAnimationFrame(this.tick);
+  }
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this.raf);
+    const cv = this.canvasRef.current;
+    if (cv) {
+      cv.removeEventListener('mousedown', this.onDown);
+      cv.removeEventListener('mousemove', this.onHover);
+      cv.removeEventListener('click', this.onClick);
+      cv.removeEventListener('wheel', this.onWheel);
+      cv.removeEventListener('mouseleave', this.onLeave);
+    }
+    window.removeEventListener('mousemove', this.onMove);
+    window.removeEventListener('mouseup', this.onUp);
+  }
+
+  list() {
+    const showB = this.props.showBenchmarks != null ? this.props.showBenchmarks : true;
+    let all = this.SAUCES.concat((this.state.userSauces || []).map(u => ({ id: u.id, name: u.name, maker: u.maker, cat: 'My sauces', pack: null, guess: u.guess })));
+    all = all.filter(s => s.guess != null && s.guess > 0);
+    if (!showB) all = all.filter(s => s.cat === 'Season 30 Pack' || s.cat === 'My sauces');
+    return all.slice().sort((a, b) => a.guess - b.guess);
+  }
+
+  heatColor(t, a) {
+    const st = this.STOPS, n = st.length - 1;
+    const x = Math.max(0, Math.min(1, t)) * n, i = Math.min(n - 1, Math.floor(x)), f = x - i;
+    const c = [0, 1, 2].map(k => Math.round(st[i][k] + (st[i + 1][k] - st[i][k]) * f));
+    return 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')';
+  }
+
+  project(x, y, z, w, h) {
+    const cy = Math.cos(this.rotY), sy = Math.sin(this.rotY);
+    const x1 = x * cy - z * sy, z1 = x * sy + z * cy;
+    const cx = Math.cos(this.rotX), sx = Math.sin(this.rotX);
+    const y1 = y * cx - z1 * sx, z2 = y * sx + z1 * cx;
+    const P = 950, d = P + z2;
+    if (d < 80) return null;
+    const s = (P / d) * this.zoom;
+    return { x: w / 2 + x1 * s, y: h * 0.52 + y1 * s, s, z: z2 };
+  }
+
+  pick(mx, my) {
+    let best = null, bd = 1e9;
+    for (const p of this.projected) {
+      const dx = p.x - mx, dy = p.y - my, dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < Math.max(11, p.rr + 6) && dist < bd) { bd = dist; best = p; }
+    }
+    return best;
+  }
+
+  targets(now) {
+    const mode = this.state.mode;
+    const data = this.list();
+    const lgs = data.map(s => Math.log10(s.guess));
+    const lmin = Math.min(...lgs) - 0.1, lmax = Math.max(...lgs) + 0.08;
+    const tOf = (g) => (Math.log10(g) - lmin) / (lmax - lmin);
+    const rings = [], pts = [];
+    let sun = false;
+    if (mode === 'helix') {
+      const H = 520, R0 = 235;
+      const yFor = (l) => H / 2 - (l - lmin) / (lmax - lmin) * H;
+      data.forEach((s, i) => {
+        const t = tOf(s.guess);
+        const a = i * 2.39996 + 0.7;
+        const r = R0 + ((i * 53) % 70) - 35;
+        pts.push({ s, t, x: r * Math.cos(a), y: yFor(Math.log10(s.guess)), z: r * Math.sin(a), size: 4.5 + Math.pow(t, 1.4) * 15 });
+      });
+      for (const v of [1000, 10000, 100000, 1000000]) {
+        const l = Math.log10(v);
+        if (l >= lmin && l <= lmax + 0.25) rings.push({ v, y: yFor(l), r: 320 });
+      }
+    } else if (mode === 'solar') {
+      sun = true;
+      const rFor = (l) => 430 - ((l - lmin) / (lmax - lmin)) * 340;
+      data.forEach((s, i) => {
+        const t = tOf(s.guess);
+        const r = rFor(Math.log10(s.guess));
+        const speed = 0.05 + t * t * 0.42;
+        const a = i * 2.39996 + now * 0.001 * speed;
+        const y = (((i * 37) % 40) - 20) * 0.9;
+        pts.push({ s, t, x: r * Math.cos(a), y, z: r * Math.sin(a), size: 4.5 + t * 7, orbitR: r });
+      });
+      for (const v of [1000, 10000, 100000]) {
+        const l = Math.log10(v);
+        if (l >= lmin && l <= lmax) rings.push({ v, y: 0, r: rFor(l) });
+      }
+    } else {
+      const sorted = data.slice().sort((a, b) => b.guess - a.guess);
+      sorted.forEach((s, i) => {
+        const t = tOf(s.guess);
+        const r = 40 + 62 * Math.sqrt(i);
+        const a = i * 2.39996 + 0.4;
+        const y = (((i * 29) % 36) - 18) * 1.1;
+        pts.push({ s, t, x: r * Math.cos(a), y, z: r * Math.sin(a), size: 3.5 + Math.pow(t, 1.5) * 27 });
+      });
+    }
+    return { pts, rings, sun };
+  }
+
+  drawRing(ctx, r, y, w, h, stroke, lw) {
+    ctx.beginPath();
+    let started = false;
+    for (let i = 0; i <= 72; i++) {
+      const a = i / 72 * Math.PI * 2;
+      const p = this.project(r * Math.cos(a), y, r * Math.sin(a), w, h);
+      if (!p) { started = false; continue; }
+      if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+    }
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = lw;
+    ctx.stroke();
+  }
+
+  tick = () => {
+    this.raf = requestAnimationFrame(this.tick);
+    const cv = this.canvasRef.current;
+    if (!cv) return;
+    this.dpr = window.devicePixelRatio || 1;
+    const w = cv.clientWidth, h = cv.clientHeight;
+    if (w === 0 || h === 0) return;
+    if (cv.width !== Math.round(w * this.dpr) || cv.height !== Math.round(h * this.dpr)) { cv.width = Math.round(w * this.dpr); cv.height = Math.round(h * this.dpr); }
+    if (!this.ctx) this.ctx = cv.getContext('2d');
+    const ctx = this.ctx;
+    const auto = this.props.autoRotate != null ? this.props.autoRotate : true;
+    if (!this.dragging && auto) this.rotY += 0.0022;
+    const glow = this.props.glowIntensity != null ? this.props.glowIntensity : 1;
+
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    // stars
+    ctx.globalCompositeOperation = 'source-over';
+    for (const st of this.stars) {
+      const p = this.project(st.x, st.y, st.z, w, h);
+      if (!p) continue;
+      ctx.fillStyle = 'rgba(190,180,255,' + (st.a * 0.45) + ')';
+      ctx.fillRect(p.x, p.y, 1.4, 1.4);
+    }
+
+    const now = performance.now();
+    const { pts, rings, sun } = this.targets(now);
+
+    // SHU rings
+    ctx.globalCompositeOperation = 'source-over';
+    for (const ring of rings) {
+      this.drawRing(ctx, ring.r, ring.y, w, h, 'rgba(150,130,255,0.14)', 1);
+      const lp = this.project(ring.r * Math.cos(-this.rotY), ring.y, ring.r * Math.sin(-this.rotY), w, h);
+      if (lp) {
+        ctx.fillStyle = 'rgba(190,175,255,0.55)';
+        ctx.font = '500 10px "Space Grotesk", Helvetica, sans-serif';
+        ctx.fillText((ring.v >= 1000000 ? '1M' : (ring.v / 1000) + 'K') + ' SHU', lp.x + 10, lp.y - 4);
+      }
+    }
+    if (sun) {
+      for (const pt of pts) this.drawRing(ctx, pt.orbitR, pt.y, w, h, this.heatColor(pt.t, 0.07), 1);
+    }
+
+    // ease every planet toward the active layout
+    const k = 0.1;
+    for (const pt of pts) {
+      const c = this.cur[pt.s.id];
+      if (!c) { this.cur[pt.s.id] = { x: pt.x, y: pt.y, z: pt.z, size: pt.size }; }
+      else { c.x += (pt.x - c.x) * k; c.y += (pt.y - c.y) * k; c.z += (pt.z - c.z) * k; c.size += (pt.size - c.size) * k; }
+    }
+
+    // the capsaicin sun
+    if (sun) {
+      const sp = this.project(0, 0, 0, w, h);
+      if (sp) {
+        const sr = 26 * sp.s * (1 + 0.05 * Math.sin(now * 0.0025));
+        ctx.globalCompositeOperation = 'lighter';
+        const sg = ctx.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, sr * 4.2 * glow);
+        sg.addColorStop(0, 'rgba(255,246,220,0.95)');
+        sg.addColorStop(0.16, 'rgba(253,186,116,0.85)');
+        sg.addColorStop(0.45, 'rgba(251,113,133,0.32)');
+        sg.addColorStop(1, 'rgba(232,121,249,0)');
+        ctx.fillStyle = sg;
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y, sr * 4.2 * glow, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(255,251,238,0.98)';
+        ctx.beginPath();
+        ctx.arc(sp.x, sp.y, sr * 0.75, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    const proj = pts.map(pt => {
+      const c = this.cur[pt.s.id];
+      return { s: pt.s, t: pt.t, size: c.size, p: this.project(c.x, c.y, c.z, w, h) };
+    });
+
+    ctx.globalCompositeOperation = 'lighter';
+    if (this.state.mode === 'helix') {
+      for (let i = 0; i < proj.length - 1; i++) {
+        const a = proj[i], b = proj[i + 1];
+        if (!a.p || !b.p) continue;
+        ctx.beginPath();
+        ctx.moveTo(a.p.x, a.p.y);
+        ctx.lineTo(b.p.x, b.p.y);
+        ctx.strokeStyle = this.heatColor((a.t + b.t) / 2, 0.22);
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+      }
+    }
+
+    const order = proj.filter(o => o.p).sort((a, b) => b.p.z - a.p.z);
+    this.projected = [];
+    let hoverDraw = null;
+    for (const o of order) {
+      const active = o.s.id === this.state.hoverId || o.s.id === this.state.selectedId;
+      const rr = o.size * o.p.s * (active ? 1.2 : 1);
+      const g = ctx.createRadialGradient(o.p.x, o.p.y, 0, o.p.x, o.p.y, rr * 3.1 * glow);
+      g.addColorStop(0, this.heatColor(o.t, 0.75));
+      g.addColorStop(0.35, this.heatColor(o.t, 0.28));
+      g.addColorStop(1, this.heatColor(o.t, 0));
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(o.p.x, o.p.y, rr * 3.1 * glow, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = this.heatColor(o.t, 0.95);
+      ctx.beginPath();
+      ctx.arc(o.p.x, o.p.y, rr, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,' + (0.55 + o.t * 0.3) + ')';
+      ctx.beginPath();
+      ctx.arc(o.p.x, o.p.y, rr * 0.42, 0, Math.PI * 2);
+      ctx.fill();
+      if (active) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.arc(o.p.x, o.p.y, rr + 4, 0, Math.PI * 2);
+        ctx.stroke();
+        hoverDraw = { o, rr };
+      }
+      this.projected.push({ id: o.s.id, x: o.p.x, y: o.p.y, rr });
+    }
+
+    if (hoverDraw) {
+      ctx.globalCompositeOperation = 'source-over';
+      const { o, rr } = hoverDraw;
+      const label = o.s.name.toUpperCase();
+      const shu = Math.round(o.s.guess).toLocaleString('en-US') + ' SHU';
+      ctx.font = '600 12px "Space Grotesk", Helvetica, sans-serif';
+      const tw = Math.max(ctx.measureText(label).width, ctx.measureText(shu).width);
+      let lx = o.p.x + rr + 14, ly = o.p.y - 12;
+      if (lx + tw + 20 > w) lx = o.p.x - rr - 14 - tw;
+      ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+      ctx.beginPath();
+      ctx.moveTo(o.p.x + (lx > o.p.x ? rr + 3 : -rr - 3), o.p.y);
+      ctx.lineTo(lx > o.p.x ? lx - 5 : lx + tw + 5, ly + 10);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(245,242,255,0.95)';
+      ctx.fillText(label, lx, ly);
+      ctx.font = '500 11px "Space Grotesk", Helvetica, sans-serif';
+      ctx.fillStyle = this.heatColor(o.t, 1);
+      ctx.fillText(shu, lx, ly + 16);
+    }
+  };
+
+  renderVals() {
+    const st = this.state;
+    const desc = this.list().slice().sort((a, b) => b.guess - a.guess);
+    const selId = st.selectedId || st.hoverId;
+    const sel = desc.find(s => s.id === selId) || null;
+    const idx = sel ? desc.findIndex(s => s.id === sel.id) : -1;
+    const mode = st.mode;
+    const mkMode = (key, label) => ({
+      label,
+      bg: mode === key ? 'linear-gradient(100deg,rgba(56,189,248,0.95),rgba(232,121,249,0.95))' : 'transparent',
+      fg: mode === key ? '#0B0518' : 'rgba(214,204,255,0.75)',
+      onPick: () => this.setState({ mode: key })
+    });
+    return {
+      canvasRef: this.canvasRef,
+      modeChips: [mkMode('helix', 'Helix'), mkMode('solar', 'Orbits'), mkMode('mass', 'Giants')],
+      modeCaption: mode === 'helix' ? 'Height = heat — climbing the log spiral'
+        : mode === 'solar' ? 'The sun is pure capsaicin — hotter sauces orbit closer'
+        : 'Planet size = heat — giants at the galactic core',
+      legendLine: mode === 'helix' ? 'Rings mark 1K / 10K / 100K SHU · log scale'
+        : mode === 'solar' ? 'Orbit distance = SHU · decade rings · hotter is closer'
+        : 'Planet size = SHU · hottest at the core',
+      hasSel: !!sel,
+      selName: sel ? sel.name : '',
+      selMaker: sel ? sel.maker : '',
+      selShuFmt: sel ? Math.round(sel.guess).toLocaleString('en-US') : '',
+      selTag: sel ? (sel.pack ? 'Season 30 · No. ' + sel.pack : (sel.kind === 'pepper' ? 'Raw pepper' : (sel.cat === 'My sauces' ? 'Your sauce' : 'Benchmark'))) : '',
+      selRank: sel ? '#' + (idx + 1) + ' of ' + desc.length + ' by heat' : '',
+      onClear: () => this.setState({ selectedId: null, hoverId: null }),
+      countLine: desc.length + ' sauces · log heat helix'
+    };
+  }
+}
+</script>
+</body>
+</html>

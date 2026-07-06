@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#FFFFFF;-webkit-font-smoothing:antialiased}
+input,select,button{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
+input[type=range]{accent-color:var(--accent)}
+@keyframes galaxySwirl{0%{background-position:0 0,0% 50%}100%{background-position:0 0,200% 50%}}
+</style>
+</helmet>
+<div style="--accent:{{ theme.accent }};--ink:{{ theme.ink }};--type-scale:{{ theme.typeScale }};--space-scale:{{ theme.spaceScale }};font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:var(--ink);max-width:1240px;margin:0 auto;padding:calc(56px * var(--space-scale)) calc(48px * var(--space-scale)) calc(80px * var(--space-scale))">
+
+  <!-- MASTHEAD -->
+  <div data-screen-label="Masthead" style="display:flex;flex-direction:column;gap:0">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:calc(24px * var(--space-scale))">
+      <div style="display:flex;align-items:center;gap:calc(20px * var(--space-scale))">
+        <h1 style="margin:0;font-size:calc(72px * var(--type-scale));font-weight:700;letter-spacing:-0.04em;line-height:0.95">Scoville<span style="color:var(--accent)">.</span></h1>
+        <a href="Scoville Galaxy.dc.html" style="display:inline-flex;align-items:center;gap:6px;padding:calc(9px * var(--space-scale)) calc(18px * var(--space-scale));border-radius:999px;border:2px solid transparent;background:linear-gradient(#FFFFFF,#FFFFFF) padding-box,linear-gradient(100deg,#38BDF8,#E879F9,#FDBA74,#818CF8,#38BDF8) border-box;background-size:100% 100%,300% 300%;background-position:0 0,0% 50%;animation:galaxySwirl 5s linear infinite;font-size:calc(11px * var(--type-scale));font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink);text-decoration:none">Galaxy view ↗</a>
+      </div>
+      <div style="font-size:calc(11px * var(--type-scale));letter-spacing:0.14em;text-transform:uppercase;color:#767676;text-align:right">A disputed index of hot-sauce heat<br>Hot Ones Season 30 + benchmarks</div>
+    </div>
+    <div style="height:8px;background:var(--accent);margin-top:calc(20px * var(--space-scale))"></div>
+    <p style="margin:calc(16px * var(--space-scale)) 0 0;font-size:calc(13px * var(--type-scale));line-height:1.5;color:#444444;max-width:640px">Every sauce below carries several numbers: what the maker claims, and the range independent evidence suggests. They rarely agree. That is the point.</p>
+  </div>
+
+  <!-- PEPPER SCALE -->
+  <div data-screen-label="Pepper scale" style="margin-top:calc(40px * var(--space-scale));padding-top:calc(20px * var(--space-scale));border-top:1px solid #E8E8E8">
+    <div onClick="{{ onTogglePeppers }}" style="display:flex;justify-content:space-between;align-items:baseline;cursor:pointer">
+      <div style="display:flex;align-items:baseline;gap:calc(10px * var(--space-scale))">
+        <span style="font-size:calc(13px * var(--type-scale));font-weight:700;color:var(--accent);width:14px;display:inline-block;text-align:center">{{ pepperChevron }}</span>
+        <span style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Peppers, for scale</span>
+      </div>
+      <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">{{ pepperScaleLabel }} scale</div>
+    </div>
+    <sc-if value="{{ pepperOpen }}" hint-placeholder-val="{{ true }}">
+      <div style="position:relative;height:20px;margin-top:calc(18px * var(--space-scale))">
+        <sc-for list="{{ pepperTicks }}" as="t" hint-placeholder-count="5">
+          <span style="position:absolute;left:{{ t.left }}%;transform:translateX({{ t.tx }});bottom:2px;font-size:calc(10px * var(--type-scale));color:#767676;font-variant-numeric:tabular-nums;white-space:nowrap">{{ t.label }}</span>
+        </sc-for>
+      </div>
+      <div style="position:relative;height:{{ pepperStripH }}px">
+        <span style="position:absolute;left:0;right:0;top:50%;height:2px;background:#E8E8E8"></span>
+        <sc-for list="{{ pepperTicks }}" as="t" hint-placeholder-count="5">
+          <span style="position:absolute;left:{{ t.left }}%;top:50%;transform:translate(-50%,-50%);width:1px;height:10px;background:#D4D4D4"></span>
+        </sc-for>
+        <sc-for list="{{ pepperMarkers }}" as="m" hint-placeholder-count="6">
+          <div style="position:absolute;left:{{ m.left }}%;top:0;bottom:0;width:0">
+            <span style="position:absolute;left:0;top:{{ m.lineTop }}px;transform:translateX(-50%);width:1px;height:{{ m.lineHeight }}px;background:#D4D4D4"></span>
+            <span style="position:absolute;left:0;top:{{ m.iconTop }}px;transform:translate(-50%,-50%) rotate(45deg);width:{{ m.size }}px;height:{{ m.size }}px;border-radius:0 50% 50% 50%;background:var(--accent)"></span>
+            <div style="position:absolute;left:{{ m.labelShiftPx }}px;top:{{ m.labelTop }}px;transform:translate(-50%,{{ m.labelTy }});text-align:center;white-space:nowrap">
+              <div style="font-size:calc(10px * var(--type-scale));font-weight:700;letter-spacing:0.02em">{{ m.name }}</div>
+              <div style="font-size:calc(9px * var(--type-scale));color:#767676;font-variant-numeric:tabular-nums;margin-top:2px">{{ m.guessFmt }} SHU</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:calc(10px * var(--space-scale));font-size:calc(10px * var(--type-scale));color:#767676;letter-spacing:0.04em">Best-guess SHU for common peppers — reference only, not part of the ranking below.</div>
+    </sc-if>
+  </div>
+
+  <!-- CONTROLS -->
+  <div data-screen-label="Filters" style="display:flex;flex-wrap:wrap;gap:calc(32px * var(--space-scale));align-items:flex-end;margin-top:calc(44px * var(--space-scale));padding-bottom:calc(20px * var(--space-scale));border-bottom:1px solid var(--ink)">
+    <div style="display:flex;flex-direction:column;gap:calc(8px * var(--space-scale))">
+      <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Source</div>
+      <div style="display:flex;gap:0">
+        <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="3">
+          <button onClick="{{ c.onPick }}" style="border:1px solid var(--ink);margin-left:-1px;padding:calc(7px * var(--space-scale)) calc(14px * var(--space-scale));font-size:calc(11px * var(--type-scale));letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:calc(8px * var(--space-scale))">
+      <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Scale</div>
+      <div style="display:flex;gap:0">
+        <sc-for list="{{ scaleChips }}" as="c" hint-placeholder-count="2">
+          <button onClick="{{ c.onPick }}" style="border:1px solid var(--ink);margin-left:-1px;padding:calc(7px * var(--space-scale)) calc(14px * var(--space-scale));font-size:calc(11px * var(--type-scale));letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:calc(8px * var(--space-scale))">
+      <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Reading</div>
+      <select value="{{ metric }}" onChange="{{ onMetric }}" style="border:1px solid var(--ink);background:#FFFFFF;padding:calc(7px * var(--space-scale)) calc(10px * var(--space-scale));font-size:calc(11px * var(--type-scale));letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:0;-webkit-appearance:none;appearance:none">
+        <option value="guess">Best guess</option>
+        <option value="claimed">Claimed</option>
+        <option value="low">Low estimate</option>
+        <option value="high">High estimate</option>
+        <option value="your">Your score</option>
+      </select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:calc(8px * var(--space-scale))">
+      <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Order</div>
+      <select value="{{ sort }}" onChange="{{ onSort }}" style="border:1px solid var(--ink);background:#FFFFFF;padding:calc(7px * var(--space-scale)) calc(10px * var(--space-scale));font-size:calc(11px * var(--type-scale));letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;border-radius:0;-webkit-appearance:none;appearance:none">
+        <option value="heat-asc">Mild to hot</option>
+        <option value="heat-desc">Hot to mild</option>
+        <option value="name">Name A–Z</option>
+        <option value="dispute">Most uncertain</option>
+        <option value="inflation">Most inflated claim</option>
+      </select>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:calc(8px * var(--space-scale))">
+      <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Claims</div>
+      <button onClick="{{ onIgnoreClaimed }}" style="border:1px solid var(--ink);padding:calc(7px * var(--space-scale)) calc(14px * var(--space-scale));font-size:calc(11px * var(--type-scale));letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;background:{{ ignoreClaimedBg }};color:{{ ignoreClaimedFg }}">Ignore claimed values</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:calc(8px * var(--space-scale));flex:1;min-width:160px">
+      <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Search</div>
+      <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Sauce or maker" style="border:1px solid var(--ink);border-radius:0;padding:calc(7px * var(--space-scale)) calc(10px * var(--space-scale));font-size:calc(12px * var(--type-scale));width:100%;box-sizing:border-box;outline-color:var(--accent)">
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div style="display:flex;flex-wrap:wrap;gap:calc(28px * var(--space-scale));align-items:center;margin-top:calc(16px * var(--space-scale));font-size:calc(10px * var(--type-scale));letter-spacing:0.1em;text-transform:uppercase;color:#444444">
+    <div style="display:flex;align-items:center;gap:calc(8px * var(--space-scale))"><span style="width:26px;height:8px;background:#D4D4D4;display:inline-block"></span>Estimated range (low–high)</div>
+    <div style="display:flex;align-items:center;gap:calc(8px * var(--space-scale))"><span style="width:11px;height:11px;background:var(--accent);display:inline-block"></span>Best guess</div>
+    <div style="display:flex;align-items:center;gap:calc(8px * var(--space-scale))"><span style="width:10px;height:10px;border:1.5px solid var(--ink);border-radius:50%;background:#FFFFFF;display:inline-block"></span>Claimed by maker</div>
+    <div style="display:flex;align-items:center;gap:calc(8px * var(--space-scale))"><span style="width:10px;height:10px;border:2px solid var(--accent);background:#FFFFFF;display:inline-block;transform:rotate(45deg)"></span>Your score</div>
+    <div style="margin-left:auto;font-size:calc(10px * var(--type-scale));color:#767676;letter-spacing:0.1em">{{ countLine }}</div>
+  </div>
+
+  <!-- CHART -->
+  <div data-screen-label="Chart" style="margin-top:calc(20px * var(--space-scale))">
+    <div style="display:grid;grid-template-columns:250px 1fr 120px;align-items:end">
+      <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676;padding-bottom:calc(6px * var(--space-scale))">Sauce</div>
+      <div style="position:relative;height:22px">
+        <sc-for list="{{ ticks }}" as="t" hint-placeholder-count="5">
+          <span style="position:absolute;left:{{ t.left }}%;transform:translateX({{ t.tx }});bottom:6px;font-size:calc(10px * var(--type-scale));color:#767676;font-variant-numeric:tabular-nums;white-space:nowrap">{{ t.label }}</span>
+        </sc-for>
+      </div>
+      <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676;padding-bottom:calc(6px * var(--space-scale));text-align:right">{{ metricLabel }} · SHU</div>
+    </div>
+
+    <div style="border-top:2px solid var(--ink)">
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="10">
+        <div>
+          <div onClick="{{ r.onToggle }}" style="display:grid;grid-template-columns:250px 1fr 120px;align-items:center;border-bottom:1px solid #E8E8E8;cursor:pointer;background:{{ r.rowBg }}" style-hover="background:#FAFAFA">
+            <div style="padding:calc(13px * var(--space-scale)) calc(20px * var(--space-scale)) calc(13px * var(--space-scale)) 0">
+              <div style="font-size:calc(12px * var(--type-scale));font-weight:700;text-transform:uppercase;letter-spacing:0.03em;line-height:1.25;font-style:{{ r.nameStyle }}">{{ r.name }}</div>
+              <div style="font-size:calc(10.5px * var(--type-scale));color:#767676;margin-top:calc(2px * var(--space-scale));display:flex;align-items:center;gap:calc(6px * var(--space-scale))">
+                <span>{{ r.maker }}</span>
+                <sc-if value="{{ r.hasBadge }}" hint-placeholder-val="{{ false }}">
+                  <span style="background:{{ r.badgeBg }};color:{{ r.badgeFg }};font-weight:700;padding:calc(1px * var(--space-scale)) calc(5px * var(--space-scale));letter-spacing:0.06em;font-size:calc(9px * var(--type-scale))">{{ r.packTag }}</span>
+                </sc-if>
+              </div>
+            </div>
+            <div style="position:relative;height:48px">
+              <sc-for list="{{ ticks }}" as="t" hint-placeholder-count="5">
+                <span style="position:absolute;left:{{ t.left }}%;top:0;bottom:0;width:1px;background:#F0F0F0"></span>
+              </sc-for>
+              <span style="position:absolute;top:50%;transform:translateY(-50%);height:8px;background:#D4D4D4;left:{{ r.bandLeft }}%;width:{{ r.bandW }}%"></span>
+              <span style="position:absolute;top:50%;left:{{ r.guessLeft }}%;transform:translate(-50%,-50%);width:11px;height:11px;background:var(--accent)"></span>
+              <sc-if value="{{ r.hasClaimed }}" hint-placeholder-val="{{ false }}">
+                <span title="Claimed" style="position:absolute;top:50%;left:{{ r.claimedLeft }}%;transform:translate(-50%,-50%);width:10px;height:10px;border:1.5px solid var(--ink);border-radius:50%;background:#FFFFFF"></span>
+              </sc-if>
+              <sc-if value="{{ r.hasYour }}" hint-placeholder-val="{{ false }}">
+                <span title="Your score" style="position:absolute;top:50%;left:{{ r.yourLeft }}%;transform:translate(-50%,-50%) rotate(45deg);width:10px;height:10px;border:2px solid var(--accent);background:#FFFFFF"></span>
+              </sc-if>
+            </div>
+            <div style="text-align:right;padding:calc(13px * var(--space-scale)) 0">
+              <sc-if value="{{ r.showClaimedLine }}" hint-placeholder-val="{{ false }}">
+                <div style="font-size:calc(11px * var(--type-scale));font-weight:400;text-decoration:line-through;color:#767676;font-variant-numeric:tabular-nums">{{ r.claimedFmt }}</div>
+              </sc-if>
+              <div style="font-size:calc(14px * var(--type-scale));font-weight:700;font-variant-numeric:tabular-nums">{{ r.activeFmt }}</div>
+              <div style="display:flex;justify-content:flex-end;gap:calc(4px * var(--space-scale));margin-top:calc(6px * var(--space-scale))">
+                <sc-for list="{{ r.stars }}" as="s" hint-placeholder-count="5">
+                  <span style="width:8px;height:8px;display:inline-block;border-radius:0 50% 50% 50%;transform:rotate(45deg);background:{{ s.bg }};border:{{ s.border }};box-sizing:border-box"></span>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <sc-if value="{{ r.expanded }}" hint-placeholder-val="{{ false }}">
+            <div style="border-bottom:2px solid var(--ink);background:#FAFAFA;padding:calc(24px * var(--space-scale)) calc(24px * var(--space-scale)) calc(28px * var(--space-scale)) calc(24px * var(--space-scale))">
+              <div style="display:flex;flex-wrap:wrap;gap:calc(40px * var(--space-scale))">
+                <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Claimed</div><div style="font-size:calc(18px * var(--type-scale));font-weight:700;margin-top:calc(4px * var(--space-scale));font-variant-numeric:tabular-nums">{{ r.claimedFmt }}</div></div>
+                <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Low estimate</div><div style="font-size:calc(18px * var(--type-scale));font-weight:700;margin-top:calc(4px * var(--space-scale));font-variant-numeric:tabular-nums">{{ r.lowFmt }}</div></div>
+                <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">High estimate</div><div style="font-size:calc(18px * var(--type-scale));font-weight:700;margin-top:calc(4px * var(--space-scale));font-variant-numeric:tabular-nums">{{ r.highFmt }}</div></div>
+                <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Best guess</div><div style="font-size:calc(18px * var(--type-scale));font-weight:700;margin-top:calc(4px * var(--space-scale));color:var(--accent);font-variant-numeric:tabular-nums">{{ r.guessFmt }}</div></div>
+                <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Claim inflation</div><div style="font-size:calc(18px * var(--type-scale));font-weight:700;margin-top:calc(4px * var(--space-scale));font-variant-numeric:tabular-nums">{{ r.inflationFmt }}</div></div>
+                <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676">Your score</div><div style="font-size:calc(18px * var(--type-scale));font-weight:700;margin-top:calc(4px * var(--space-scale));font-variant-numeric:tabular-nums">{{ r.yourFmt }}</div></div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 220px;gap:calc(48px * var(--space-scale));margin-top:calc(24px * var(--space-scale));align-items:end">
+                <div>
+                  <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676;margin-bottom:calc(10px * var(--space-scale))">Adjust your heat score — where does it really sit?</div>
+                  <input type="range" min="0" max="1000" value="{{ r.sliderVal }}" onChange="{{ r.onSlide }}" style="width:100%;display:block">
+                  <div style="display:flex;justify-content:space-between;font-size:calc(9px * var(--type-scale));color:#767676;margin-top:calc(6px * var(--space-scale));font-variant-numeric:tabular-nums"><span>100</span><span>1,000,000 (log)</span></div>
+                </div>
+                <div>
+                  <div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676;margin-bottom:calc(10px * var(--space-scale))">Burn rating</div>
+                  <div style="display:flex;gap:calc(8px * var(--space-scale));align-items:center">
+                    <sc-for list="{{ r.stars }}" as="s" hint-placeholder-count="5">
+                      <button data-val="{{ s.v }}" onClick="{{ r.onRate }}" style="width:22px;height:22px;border:none;cursor:pointer;padding:0;background:none;display:flex;align-items:center;justify-content:center">
+                        <span style="width:16px;height:16px;display:block;border-radius:0 50% 50% 50%;transform:rotate(45deg);background:{{ s.bg }};border:{{ s.border }};box-sizing:border-box;pointer-events:none"></span>
+                      </button>
+                    </sc-for>
+                    <span style="font-size:calc(10px * var(--type-scale));color:#767676;margin-left:calc(6px * var(--space-scale))">{{ r.ratingWord }}</span>
+                  </div>
+                </div>
+              </div>
+              <div style="display:flex;gap:calc(16px * var(--space-scale));margin-top:calc(20px * var(--space-scale))">
+                <sc-if value="{{ r.hasOverride }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ r.onReset }}" style="border:1px solid var(--ink);background:#FFFFFF;padding:calc(6px * var(--space-scale)) calc(14px * var(--space-scale));font-size:calc(10px * var(--type-scale));letter-spacing:0.1em;text-transform:uppercase;cursor:pointer">Reset my inputs</button>
+                </sc-if>
+                <sc-if value="{{ r.isMine }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ r.onDelete }}" style="border:1px solid var(--accent);color:var(--accent);background:#FFFFFF;padding:calc(6px * var(--space-scale)) calc(14px * var(--space-scale));font-size:calc(10px * var(--type-scale));letter-spacing:0.1em;text-transform:uppercase;cursor:pointer">Delete sauce</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:calc(40px * var(--space-scale)) 0;font-size:calc(12px * var(--type-scale));color:#767676;letter-spacing:0.08em;text-transform:uppercase">No sauces match — loosen a filter.</div>
+    </sc-if>
+  </div>
+
+  <!-- ADD SAUCE -->
+  <div data-screen-label="Add sauce" style="margin-top:calc(56px * var(--space-scale));border-top:2px solid var(--ink);padding-top:calc(24px * var(--space-scale))">
+    <div style="display:flex;align-items:baseline;gap:calc(16px * var(--space-scale))">
+      <h2 style="margin:0;font-size:calc(20px * var(--type-scale));font-weight:700;letter-spacing:-0.01em">Add a sauce</h2>
+      <span style="font-size:calc(11px * var(--type-scale));color:#767676">Only a name is required. Leave numbers blank if unknown — the range fills in around what you give.</span>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 2fr 1fr 1fr 1fr auto;gap:calc(12px * var(--space-scale));margin-top:calc(16px * var(--space-scale));align-items:end">
+      <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676;margin-bottom:calc(6px * var(--space-scale))">Sauce name</div><input ref="{{ nameRef }}" placeholder="e.g. Backyard Reaper" style="border:1px solid var(--ink);border-radius:0;padding:calc(8px * var(--space-scale)) calc(10px * var(--space-scale));font-size:calc(12px * var(--type-scale));width:100%;box-sizing:border-box;outline-color:var(--accent)"></div>
+      <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676;margin-bottom:calc(6px * var(--space-scale))">Maker</div><input ref="{{ makerRef }}" placeholder="Optional" style="border:1px solid var(--ink);border-radius:0;padding:calc(8px * var(--space-scale)) calc(10px * var(--space-scale));font-size:calc(12px * var(--type-scale));width:100%;box-sizing:border-box;outline-color:var(--accent)"></div>
+      <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676;margin-bottom:calc(6px * var(--space-scale))">Claimed SHU</div><input ref="{{ claimedRef }}" type="number" placeholder="—" style="border:1px solid var(--ink);border-radius:0;padding:calc(8px * var(--space-scale)) calc(10px * var(--space-scale));font-size:calc(12px * var(--type-scale));width:100%;box-sizing:border-box;outline-color:var(--accent)"></div>
+      <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676;margin-bottom:calc(6px * var(--space-scale))">Low SHU</div><input ref="{{ lowRef }}" type="number" placeholder="—" style="border:1px solid var(--ink);border-radius:0;padding:calc(8px * var(--space-scale)) calc(10px * var(--space-scale));font-size:calc(12px * var(--type-scale));width:100%;box-sizing:border-box;outline-color:var(--accent)"></div>
+      <div><div style="font-size:calc(9px * var(--type-scale));letter-spacing:0.16em;text-transform:uppercase;color:#767676;margin-bottom:calc(6px * var(--space-scale))">High SHU</div><input ref="{{ highRef }}" type="number" placeholder="—" style="border:1px solid var(--ink);border-radius:0;padding:calc(8px * var(--space-scale)) calc(10px * var(--space-scale));font-size:calc(12px * var(--type-scale));width:100%;box-sizing:border-box;outline-color:var(--accent)"></div>
+      <button onClick="{{ onAdd }}" style="border:none;background:var(--accent);color:#FFFFFF;padding:calc(9px * var(--space-scale)) calc(22px * var(--space-scale));font-size:calc(11px * var(--type-scale));letter-spacing:0.1em;text-transform:uppercase;font-weight:700;cursor:pointer" style-hover="background:var(--ink)">Add</button>
+    </div>
+    <sc-if value="{{ hasAddError }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:calc(10px * var(--space-scale));font-size:calc(11px * var(--type-scale));color:var(--accent)">{{ addError }}</div>
+    </sc-if>
+  </div>
+
+  <!-- GUIDE -->
+  <sc-if value="{{ showGuide }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Guide" style="margin-top:calc(64px * var(--space-scale));border-top:8px solid var(--ink);padding-top:calc(28px * var(--space-scale))">
+      <h2 style="margin:0;font-size:calc(28px * var(--type-scale));font-weight:700;letter-spacing:-0.02em">The fine print on heat</h2>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:calc(36px * var(--space-scale));margin-top:calc(28px * var(--space-scale))">
+        <div>
+          <div style="font-size:calc(40px * var(--type-scale));font-weight:700;color:var(--accent);line-height:1">01</div>
+          <div style="font-size:calc(11px * var(--type-scale));font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-top:calc(10px * var(--space-scale));padding-top:calc(10px * var(--space-scale));border-top:1px solid var(--ink)">Why the numbers disagree</div>
+          <p style="font-size:calc(12px * var(--type-scale));line-height:1.65;color:#444444;margin:calc(10px * var(--space-scale)) 0 0">A Scoville rating is measured in a lab, but the number on the label is marketing. Makers often quote the rating of the <b>pepper</b>, not the finished sauce — which is mostly vinegar, fruit, and vegetables diluting that pepper. Crops vary batch to batch, and the original Scoville test was literally a panel of humans sipping dilutions until they stopped feeling burn. When Season 25 sauces were sent for independent lab testing, most measured far below their claimed number. So we show the claim <i>and</i> a plausible range — the truth usually lives between them.</p>
+        </div>
+        <div>
+          <div style="font-size:calc(40px * var(--type-scale));font-weight:700;color:var(--accent);line-height:1">02</div>
+          <div style="font-size:calc(11px * var(--type-scale));font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-top:calc(10px * var(--space-scale));padding-top:calc(10px * var(--space-scale));border-top:1px solid var(--ink)">Not all heat is alike</div>
+          <p style="font-size:calc(12px * var(--type-scale));line-height:1.65;color:#444444;margin:calc(10px * var(--space-scale)) 0 0">Chili heat comes from a family of capsaicinoids, and the mix changes the experience: some hit the tip of the tongue instantly, others creep into the throat a minute later. Your own sensitivity varies too — the receptor that senses capsaicin (TRPV1) desensitizes with regular exposure, which is why chiliheads genuinely feel less. And other “spicy” foods work on different nerves entirely: black pepper’s piperine is milder, wasabi and mustard hit the nose, ginger barely registers on the same scale. SHU only measures capsaicinoids.</p>
+        </div>
+        <div>
+          <div style="font-size:calc(40px * var(--type-scale));font-weight:700;color:var(--accent);line-height:1">03</div>
+          <div style="font-size:calc(11px * var(--type-scale));font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-top:calc(10px * var(--space-scale));padding-top:calc(10px * var(--space-scale));border-top:1px solid var(--ink)">What to expect</div>
+          <p style="font-size:calc(12px * var(--type-scale));line-height:1.65;color:#444444;margin:calc(10px * var(--space-scale)) 0 0">Capsaicin tricks nerves into reporting heat — nothing is actually burning. Typical responses: burning lips and tongue, sweating, a flushed face, runny nose, watery eyes, and hiccups. At the top of this chart, add a racing heart, stomach cramping, and occasionally nausea. It peaks within a few minutes and fades as the receptors exhaust themselves. Unpleasant, temporary, and — for a healthy adult — not harmful. The pain is real; the damage is not.</p>
+        </div>
+        <div>
+          <div style="font-size:calc(40px * var(--type-scale));font-weight:700;color:var(--accent);line-height:1">04</div>
+          <div style="font-size:calc(11px * var(--type-scale));font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-top:calc(10px * var(--space-scale));padding-top:calc(10px * var(--space-scale));border-top:1px solid var(--ink)">How to put it out</div>
+          <p style="font-size:calc(12px * var(--type-scale));line-height:1.65;color:#444444;margin:calc(10px * var(--space-scale)) 0 0">Capsaicin dissolves in fat, not water. <b>Whole milk is the proven remedy</b> — its casein protein pulls capsaicin off the receptor; yogurt and ice cream work the same way. Sugar water or honey measurably helps. Starches (bread, rice) give modest relief. Plain water and beer mostly spread the oil around, and carbonation can make it sting more. Cold anything numbs temporarily. Failing all that: time. Fifteen minutes and the nerves stand down on their own.</p>
+        </div>
+      </div>
+      <div style="margin-top:calc(40px * var(--space-scale));border-top:1px solid #E8E8E8;padding-top:calc(14px * var(--space-scale));font-size:calc(10px * var(--type-scale));line-height:1.7;color:#767676;max-width:880px">
+        Method — Claimed SHU: official Hot Ones / HEATONIST figures, or commonly cited manufacturer numbers for benchmarks. Low/High: plausible range for the finished sauce based on ingredient dilution and precedent from independent lab testing of a prior season. Best guess: midpoint informed by the pepper’s position in the ingredient list. These are informed estimates, not lab measurements; no independent test of the Season 30 pack has been published. Reference: HPLC lab testing of Season 25 sauces (Howtown, Dec 2024) found most sauces well below claimed SHU.
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:1400},&quot;showGuide&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Content&quot;},&quot;startScale&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;log&quot;,&quot;linear&quot;],&quot;default&quot;:&quot;linear&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Chart&quot;},&quot;colorScheme&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;options&quot;:[[&quot;#E1251B&quot;,&quot;#111111&quot;],[&quot;#C2410C&quot;,&quot;#1C1410&quot;],[&quot;#2F6B3A&quot;,&quot;#14201A&quot;],[&quot;#7C2D6B&quot;,&quot;#1F1420&quot;]],&quot;default&quot;:[&quot;#E1251B&quot;,&quot;#111111&quot;],&quot;tsType&quot;:&quot;string[]&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;typeScale&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0.85,&quot;max&quot;:1.3,&quot;step&quot;:0.05,&quot;default&quot;:1.1,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;spaceScale&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:0.7,&quot;max&quot;:1.4,&quot;step&quot;:0.05,&quot;default&quot;:1.2,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Appearance&quot;}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.SEED = [
+      { id: 'tb-mild', name: 'Taco Bell Mild Sauce', maker: 'Taco Bell', cat: 'Benchmark', pack: null, claimed: null, low: 200, high: 600, guess: 400 },
+      { id: 'franks', name: "Frank's RedHot", maker: "McIlhenny/Frank's", cat: 'Benchmark', pack: null, claimed: 450, low: 400, high: 500, guess: 450 },
+      { id: 'louisiana', name: 'Louisiana Hot Sauce', maker: 'Bruce Foods', cat: 'Benchmark', pack: null, claimed: 450, low: 400, high: 600, guess: 450 },
+      { id: 'tb-hot', name: 'Taco Bell Hot Sauce', maker: 'Taco Bell', cat: 'Benchmark', pack: null, claimed: null, low: 500, high: 1200, guess: 800 },
+      { id: 'cholula-jal', name: 'Cholula Jalapeño', maker: 'Cholula', cat: 'Benchmark', pack: null, claimed: null, low: 700, high: 1500, guess: 1000 },
+      { id: 'cholula-chip', name: 'Cholula Chipotle', maker: 'Cholula', cat: 'Benchmark', pack: null, claimed: null, low: 1000, high: 2500, guess: 1500 },
+      { id: 'shishito', name: "That's What Shishito Said", maker: 'Down to Ferment', cat: 'Season 30 Pack', pack: 1, claimed: 2100, low: 1500, high: 2500, guess: 2000 },
+      { id: 'tb-diablo', name: 'Taco Bell Diablo Sauce', maker: 'Taco Bell', cat: 'Benchmark', pack: null, claimed: null, low: 1200, high: 2800, guess: 2000 },
+      { id: 'sriracha', name: 'Huy Fong Sriracha', maker: 'Huy Fong Foods', cat: 'Benchmark', pack: null, claimed: 2200, low: 1800, high: 2500, guess: 2200 },
+      { id: 'hot-bergine', name: 'Hot Bergine', maker: 'Good Heat', cat: 'Season 30 Pack', pack: 2, claimed: 7900, low: 1500, high: 4000, guess: 2500 },
+      { id: 'marie-sharps', name: "Marie Sharp's Original Hot Habanero", maker: "Marie Sharp's", cat: 'Benchmark', pack: null, claimed: 3000, low: 2000, high: 5000, guess: 3000 },
+      { id: 'tabasco', name: 'Tabasco Original', maker: 'McIlhenny Co.', cat: 'Benchmark', pack: null, claimed: 3750, low: 2500, high: 5000, guess: 3500 },
+      { id: 'pickled-garlic', name: 'Pickled Garlic Sriracha', maker: 'Hot Ones Hot Sauce', cat: 'Season 30 Pack', pack: 3, claimed: 18000, low: 3000, high: 7000, guess: 5000 },
+      { id: 'chickpotle', name: 'Chickpotle', maker: 'Black Eyed Susan', cat: 'Season 30 Pack', pack: 4, claimed: 32000, low: 5000, high: 15000, guess: 9000 },
+      { id: 'tropical-amarillo', name: 'Tropical Amarillo', maker: 'Hot Ones Hot Sauce', cat: 'Season 30 Pack', pack: 6, claimed: 69000, low: 10000, high: 30000, guess: 18000 },
+      { id: 'eight-dragon', name: '8 Dragon', maker: 'Sinai Gourmet', cat: 'Season 30 Pack', pack: 7, claimed: 102000, low: 10000, high: 40000, guess: 20000 },
+      { id: 'pikliz', name: 'Pikliz N Scorpion', maker: 'Hot N Saucy', cat: 'Season 30 Pack', pack: 5, claimed: 54000, low: 15000, high: 40000, guess: 25000 },
+      { id: 'xxx-salsa', name: 'XXX Salsa Vibes', maker: 'High Desert Sauce Co.', cat: 'Season 30 Pack', pack: 9, claimed: 820000, low: 40000, high: 120000, guess: 70000 },
+      { id: 'number-8', name: '"#8"', maker: 'Hot Ones Hot Sauce', cat: 'Season 30 Pack', pack: 8, claimed: 135600, low: 100000, high: 200000, guess: 150000 },
+      { id: 'last-dab', name: 'Last Dab Thermageddon', maker: 'Hot Ones Hot Sauce', cat: 'Season 30 Pack', pack: 10, claimed: 2693000, low: 80000, high: 300000, guess: 150000 }
+    ];
+    this.PEPPERS = [
+      { id: 'pep-poblano', name: 'Poblano', guess: 1500 },
+      { id: 'pep-jalapeno', name: 'Jalapeño', guess: 5000 },
+      { id: 'pep-calabrian', name: 'Calabrian', guess: 14000 },
+      { id: 'pep-serrano', name: 'Serrano', guess: 17000 },
+      { id: 'pep-cayenne', name: 'Cayenne', guess: 40000 },
+      { id: 'pep-thai', name: 'Thai Chili', guess: 75000 },
+      { id: 'pep-habanero', name: 'Habanero', guess: 200000 },
+      { id: 'pep-scotch', name: 'Scotch Bonnet', guess: 225000 },
+      { id: 'pep-ghost', name: 'Ghost Pepper', guess: 1000000 },
+      { id: 'pep-scorpion', name: 'Trinidad Moruga Scorpion', guess: 1500000 },
+      { id: 'pep-reaper', name: 'Carolina Reaper', guess: 1640000 },
+      { id: 'pep-x', name: 'Pepper X', guess: 2500000 }
+    ];
+    this.state = {
+      userSauces: [], overrides: {},
+      cats: [], query: '', metric: 'guess', sort: 'heat-desc',
+      scale: null, ignoreClaimed: false, expandedId: null, addError: '',
+      pepperOpen: false
+    };
+    this.nameRef = React.createRef();
+    this.makerRef = React.createRef();
+    this.claimedRef = React.createRef();
+    this.lowRef = React.createRef();
+    this.highRef = React.createRef();
+  }
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem('scoville-index-v1');
+      if (raw) {
+        const d = JSON.parse(raw);
+        this.setState({ userSauces: d.userSauces || [], overrides: d.overrides || {} });
+      }
+    } catch (e) {}
+  }
+
+  persist(next) {
+    const s = Object.assign({}, this.state, next);
+    try {
+      localStorage.setItem('scoville-index-v1', JSON.stringify({ userSauces: s.userSauces, overrides: s.overrides }));
+    } catch (e) {}
+  }
+
+  scaleMode() { return this.state.scale || this.props.startScale || 'log'; }
+
+  niceCeil(v) {
+    if (v <= 0) return 100;
+    const exp = Math.floor(Math.log10(v));
+    const base = Math.pow(10, exp);
+    const mult = v / base;
+    const niceMult = mult <= 1 ? 1 : mult <= 2 ? 2 : mult <= 5 ? 5 : 10;
+    return niceMult * base;
+  }
+
+  niceFloor(v) {
+    if (v <= 0) return 1;
+    const exp = Math.floor(Math.log10(v));
+    const base = Math.pow(10, exp);
+    const mult = v / base;
+    const niceMult = mult >= 5 ? 5 : mult >= 2 ? 2 : 1;
+    return niceMult * base;
+  }
+
+  pos(v, domain) {
+    if (v == null) return null;
+    if (this.scaleMode() === 'linear') {
+      return Math.max(0, Math.min(100, (v - domain.min) / (domain.max - domain.min) * 100));
+    }
+    const p = (Math.log10(Math.max(v, domain.min)) - Math.log10(domain.min)) / (Math.log10(domain.max) - Math.log10(domain.min)) * 100;
+    return Math.max(0, Math.min(100, p));
+  }
+
+  toggleCat(key) {
+    const cats = this.state.cats.includes(key) ? this.state.cats.filter(c => c !== key) : this.state.cats.concat([key]);
+    this.setState({ cats });
+  }
+
+  setOverride(id, patch) {
+    const overrides = Object.assign({}, this.state.overrides);
+    overrides[id] = Object.assign({}, overrides[id] || {}, patch);
+    this.setState({ overrides });
+    this.persist({ overrides });
+  }
+
+  renderVals() {
+    const st = this.state;
+    const fmt = (n) => (n == null || isNaN(n)) ? '—' : Math.round(n).toLocaleString('en-US');
+    const scale = this.scaleMode();
+    const schemeArr = Array.isArray(this.props.colorScheme) && this.props.colorScheme.length >= 2 ? this.props.colorScheme : ['#E1251B', '#111111'];
+    const theme = {
+      accent: schemeArr[0],
+      ink: schemeArr[1],
+      typeScale: this.props.typeScale != null ? this.props.typeScale : 1,
+      spaceScale: this.props.spaceScale != null ? this.props.spaceScale : 1
+    };
+    const metric = st.metric;
+    const all = this.SEED.concat(st.userSauces);
+
+    // build view rows
+    let rows = all.map((s) => {
+      const ov = st.overrides[s.id] || {};
+      const your = ov.your != null ? ov.your : null;
+      const rating = ov.rating || 0;
+      const activeVal = metric === 'your' ? (your != null ? your : null)
+        : metric === 'claimed' ? s.claimed
+        : metric === 'low' ? s.low
+        : metric === 'high' ? s.high : s.guess;
+      return Object.assign({}, s, { your, rating, activeVal, isMine: s.cat === 'My sauces' });
+    });
+
+    // filters
+    if (st.cats.length > 0) {
+      rows = rows.filter(r =>
+        (st.cats.includes('pack') && r.cat === 'Season 30 Pack') ||
+        (st.cats.includes('bench') && r.cat === 'Benchmark') ||
+        (st.cats.includes('mine') && r.isMine)
+      );
+    }
+    const q = st.query.trim().toLowerCase();
+    if (q) rows = rows.filter(r => (r.name + ' ' + r.maker).toLowerCase().includes(q));
+
+    // sort
+    const sortVal = r => r.activeVal != null ? r.activeVal : r.guess;
+    if (st.sort === 'heat-asc') rows.sort((a, b) => sortVal(a) - sortVal(b));
+    if (st.sort === 'heat-desc') rows.sort((a, b) => sortVal(b) - sortVal(a));
+    if (st.sort === 'name') rows.sort((a, b) => a.name.localeCompare(b.name));
+    if (st.sort === 'dispute') rows.sort((a, b) => (b.high / b.low) - (a.high / a.low));
+    if (st.sort === 'inflation') rows.sort((a, b) => ((b.claimed || 0) / b.guess) - ((a.claimed || 0) / a.guess));
+
+    const metricLabels = { guess: 'Best guess', claimed: 'Claimed', low: 'Low estimate', high: 'High estimate', your: 'Your score' };
+    const RATING_WORDS = ['Unrated', 'Condiment', 'Warm', 'Hot', 'Punishing', 'Regret'];
+
+    // domain adapts to whichever sauces are currently visible, and to whether claims are shown
+    const domainVals = [];
+    rows.forEach(r => {
+      domainVals.push(r.low, r.high, r.guess);
+      if (r.your != null) domainVals.push(r.your);
+      if (!st.ignoreClaimed && r.claimed != null) domainVals.push(r.claimed);
+    });
+    if (domainVals.length === 0) domainVals.push(100, 1000000);
+    const SHU_MAX = 2500000; // hard ceiling of the SHU scale
+    const rawMin = Math.min(...domainVals), rawMax = Math.max(...domainVals);
+    const domain = this.scaleMode() === 'linear'
+      ? { min: 0, max: Math.min(this.niceCeil(rawMax), SHU_MAX) }
+      : { min: Math.min(this.niceFloor(rawMin), 100), max: Math.min(Math.max(this.niceCeil(rawMax), 1000), SHU_MAX) };
+
+    const viewRows = rows.map((r) => {
+      const hasClaimed = r.claimed != null && !st.ignoreClaimed;
+      const bandL = this.pos(r.low, domain), bandR = this.pos(r.high, domain);
+      const expanded = st.expandedId === r.id;
+      const sliderBase = r.your != null ? r.your : r.guess;
+      const sliderVal = Math.round(Math.max(0, Math.min(1000, (Math.log10(Math.max(sliderBase, 100)) - 2) / 4 * 1000)));
+      const hasOverride = r.your != null || r.rating > 0;
+      const packTag = r.pack ? 'NO. ' + r.pack : (r.isMine ? 'YOURS' : '');
+      return {
+        name: r.name, maker: r.maker,
+        nameStyle: 'normal',
+        packTag, hasBadge: !!packTag,
+        badgeBg: 'transparent',
+        badgeFg: 'var(--accent)',
+        bandLeft: bandL, bandW: Math.max(bandR - bandL, 0.4),
+        guessLeft: this.pos(r.guess, domain),
+        hasClaimed, claimedLeft: this.pos(r.claimed, domain),
+        showClaimedLine: hasClaimed && metric !== 'claimed',
+        hasYour: r.your != null, yourLeft: this.pos(r.your, domain),
+        activeFmt: fmt(r.activeVal),
+        ratingLine: r.rating > 0 ? RATING_WORDS[r.rating].toUpperCase() : (expanded ? 'CLOSE' : 'DETAILS'),
+        rowBg: expanded ? '#FAFAFA' : '#FFFFFF',
+        expanded,
+        claimedFmt: fmt(r.claimed), lowFmt: fmt(r.low), highFmt: fmt(r.high), guessFmt: fmt(r.guess),
+        yourFmt: r.your != null ? fmt(r.your) : '—',
+        inflationFmt: r.claimed != null ? '×' + (r.claimed / r.guess).toFixed(1) : '—',
+        sliderVal,
+        ratingWord: RATING_WORDS[r.rating],
+        stars: [1, 2, 3, 4, 5].map(v => ({ v, bg: v <= r.rating ? 'var(--accent)' : '#FFFFFF', border: v <= r.rating ? 'none' : '1.3px solid var(--ink)' })),
+        hasOverride, isMine: r.isMine,
+        onToggle: () => this.setState({ expandedId: expanded ? null : r.id }),
+        onSlide: (e) => {
+          const t = +e.target.value;
+          const shu = Math.pow(10, 2 + t / 1000 * 4);
+          const mag = Math.pow(10, Math.floor(Math.log10(shu)) - 1);
+          this.setOverride(r.id, { your: Math.round(shu / mag) * mag });
+        },
+        onRate: (e) => {
+          const v = +e.currentTarget.dataset.val;
+          this.setOverride(r.id, { rating: v === r.rating ? 0 : v });
+        },
+        onReset: (e) => { e.stopPropagation(); this.setOverride(r.id, { your: null, rating: 0 }); },
+        onDelete: (e) => {
+          e.stopPropagation();
+          const userSauces = st.userSauces.filter(u => u.id !== r.id);
+          this.setState({ userSauces, expandedId: null });
+          this.persist({ userSauces });
+        }
+      };
+    });
+
+    const ticks = [0, 1, 2, 3, 4].map(i => {
+      const frac = i / 4;
+      const val = scale === 'linear'
+        ? domain.min + frac * (domain.max - domain.min)
+        : Math.pow(10, Math.log10(domain.min) + frac * (Math.log10(domain.max) - Math.log10(domain.min)));
+      return { label: fmt(val), left: i * 25, tx: i === 0 ? '0%' : (i === 4 ? '-100%' : '-50%') };
+    });
+
+    const chip = (label, active, onPick) => ({ label, bg: active ? 'var(--ink)' : '#FFFFFF', fg: active ? '#FFFFFF' : 'var(--ink)', onPick });
+
+    // --- Pepper scale strip ---
+    const pepperVals = this.PEPPERS.map(p => p.guess);
+    const pMin = Math.min(...pepperVals), pMax = Math.max(...pepperVals);
+    const pepperDomain = scale === 'linear'
+      ? { min: 0, max: Math.min(this.niceCeil(pMax), SHU_MAX) }
+      : { min: this.niceFloor(pMin), max: Math.min(this.niceCeil(pMax), SHU_MAX) };
+    const pepperTicks = [0, 1, 2, 3, 4].map(i => {
+      const frac = i / 4;
+      const val = scale === 'linear'
+        ? pepperDomain.min + frac * (pepperDomain.max - pepperDomain.min)
+        : Math.pow(10, Math.log10(pepperDomain.min) + frac * (Math.log10(pepperDomain.max) - Math.log10(pepperDomain.min)));
+      return { label: fmt(val), left: i * 25, tx: i === 0 ? '0%' : (i === 4 ? '-100%' : '-50%') };
+    });
+    // Row assignment: greedy, using estimated label widths so labels never share a row while overlapping.
+    const TRACK_PX = 1125; // approx track width at max layout width
+    const ts = this.props.typeScale != null ? this.props.typeScale : 1;
+    const withLeft = this.PEPPERS.map(p => {
+      const left = this.pos(p.guess, pepperDomain);
+      const shuLine = fmt(p.guess) + ' SHU';
+      const labelPx = Math.max(p.name.length * 6.5 * ts, shuLine.length * 5 * ts) + 8;
+      const halfW = (labelPx / TRACK_PX) * 100 / 2;
+      const labelLeft = Math.max(halfW, Math.min(100 - halfW, left));
+      return { p, left, halfW, labelLeft };
+    }).sort((a, b) => a.left - b.left);
+    const MAX_ROWS = 10, PAD = 0.8;
+    const rowRight = [];
+    withLeft.forEach(item => {
+      const leftEdge = item.labelLeft - item.halfW;
+      let row = rowRight.findIndex(v => leftEdge >= v + PAD);
+      if (row === -1) {
+        if (rowRight.length < MAX_ROWS) row = rowRight.length;
+        else row = rowRight.indexOf(Math.min(...rowRight)); // least-bad fallback
+      }
+      rowRight[row] = Math.max(rowRight[row] != null && row < rowRight.length ? rowRight[row] : -100, item.labelLeft + item.halfW);
+      item.row = row;
+    });
+    const baseDist = 28, bandGap = 40;
+    const maxRow = Math.max(0, ...withLeft.map(i => i.row));
+    const maxBand = Math.floor(maxRow / 2);
+    const pepperStripH = 2 * (baseDist + maxBand * bandGap + 52);
+    const pepperMarkers = withLeft.map(({ p, left, labelLeft, row }) => {
+      const dir = row % 2 === 0 ? 1 : -1;
+      const band = Math.floor(row / 2);
+      const dist = baseDist + band * bandGap;
+      const t = left / 100;
+      const size = 9 + t * 11;
+      const center = pepperStripH / 2;
+      const iconTop = center + dir * dist;
+      const lineTop = dir > 0 ? center : iconTop + size / 2;
+      const lineHeight = Math.max(dist - size / 2, 4);
+      const labelTop = dir > 0 ? iconTop + size / 2 + 6 : iconTop - size / 2 - 6;
+      return {
+        name: p.name, guessFmt: fmt(p.guess),
+        left, labelShiftPx: Math.round((labelLeft - left) / 100 * TRACK_PX),
+        size, iconTop, lineTop, lineHeight, labelTop,
+        labelTy: dir > 0 ? '0' : '-100%'
+      };
+    });
+
+    return {
+      catChips: [
+        chip('All', st.cats.length === 0, () => this.setState({ cats: [] })),
+        chip('Season 30', st.cats.includes('pack'), () => this.toggleCat('pack')),
+        chip('Benchmarks', st.cats.includes('bench'), () => this.toggleCat('bench')),
+        chip('Mine', st.cats.includes('mine'), () => this.toggleCat('mine'))
+      ],
+      pepperScaleLabel: scale === 'linear' ? 'Linear' : 'Log',
+      pepperOpen: st.pepperOpen,
+      onTogglePeppers: () => this.setState({ pepperOpen: !st.pepperOpen }),
+      pepperChevron: st.pepperOpen ? '−' : '+',
+      pepperTicks,
+      pepperStripH,
+      pepperMarkers,
+      scaleChips: [
+        chip('Log', scale === 'log', () => this.setState({ scale: 'log' })),
+        chip('Linear', scale === 'linear', () => this.setState({ scale: 'linear' }))
+      ],
+      metric: st.metric,
+      onMetric: (e) => this.setState({ metric: e.target.value }),
+      sort: st.sort,
+      onSort: (e) => this.setState({ sort: e.target.value }),
+      ignoreClaimedBg: st.ignoreClaimed ? 'var(--ink)' : '#FFFFFF',
+      ignoreClaimedFg: st.ignoreClaimed ? '#FFFFFF' : 'var(--ink)',
+      onIgnoreClaimed: () => this.setState({ ignoreClaimed: !st.ignoreClaimed }),
+      query: st.query,
+      onQuery: (e) => this.setState({ query: e.target.value }),
+      countLine: viewRows.length + ' of ' + all.length + ' sauces · ' + scale + ' scale',
+      metricLabel: metricLabels[metric],
+      ticks,
+      rows: viewRows,
+      noResults: viewRows.length === 0,
+      nameRef: this.nameRef, makerRef: this.makerRef, claimedRef: this.claimedRef, lowRef: this.lowRef, highRef: this.highRef,
+      hasAddError: !!st.addError,
+      addError: st.addError,
+      onAdd: () => {
+        const name = (this.nameRef.current.value || '').trim();
+        if (!name) { this.setState({ addError: 'A sauce needs a name.' }); return; }
+        const num = ref => { const v = parseFloat(ref.current.value); return isNaN(v) || v <= 0 ? null : Math.min(v, 2500000); };
+        let claimed = num(this.claimedRef), low = num(this.lowRef), high = num(this.highRef);
+        if (low != null && high != null && low > high) { const t = low; low = high; high = t; }
+        let guess;
+        if (low != null && high != null) guess = Math.round(Math.sqrt(low * high));
+        else guess = low != null ? low : (high != null ? high : (claimed != null ? claimed : 1000));
+        if (low == null) low = Math.round(guess * 0.6);
+        if (high == null) high = Math.round(guess * 1.6);
+        const id = 'user-' + Date.now();
+        const sauce = { id, name, maker: (this.makerRef.current.value || '').trim() || 'Home addition', cat: 'My sauces', pack: null, claimed, low, high, guess };
+        const userSauces = st.userSauces.concat([sauce]);
+        this.setState({ userSauces, addError: '', expandedId: id });
+        this.persist({ userSauces });
+        this.nameRef.current.value = ''; this.makerRef.current.value = '';
+        this.claimedRef.current.value = ''; this.lowRef.current.value = ''; this.highRef.current.value = '';
+      },
+      showGuide: this.props.showGuide != null ? this.props.showGuide : true,
+      theme
+    };
+  }
+}
+</script>
+</body>
+</html>
