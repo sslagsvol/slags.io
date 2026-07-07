@@ -123,10 +123,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     // (synthesizing one if the source HTML omitted it) but may carry
     // attributes through, so match the full opening tag. slice() rather than
     // replace() keeps us clear of $-pattern substitution in resourceScript.
+    // Google Analytics (GA4) — injected into the template head so it survives
+    // the documentElement swap below. Inline bootstrap (no src) appends the
+    // async gtag.js loader at runtime, so it never blocks the page's scripts.
+    const gaSnippet = '<script>window.dataLayer=window.dataLayer||[];' +
+      'function gtag(){dataLayer.push(arguments);}window.gtag=gtag;' +
+      'gtag("js",new Date());gtag("config","G-WZGPQSX3XJ");' +
+      'var gaS=document.createElement("script");gaS.async=1;' +
+      'gaS.src="https://www.googletagmanager.com/gtag/js?id=G-WZGPQSX3XJ";' +
+      'document.head.appendChild(gaS);</' + 'script>';
     const headOpen = template.match(/<head[^>]*>/i);
     if (headOpen) {
       const i = headOpen.index + headOpen[0].length;
-      template = template.slice(0, i) + resourceScript + template.slice(i);
+      template = template.slice(0, i) + resourceScript + gaSnippet + template.slice(i);
     }
 
     // Parse the template and swap the root element. Scripts inserted via
