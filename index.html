@@ -21,15 +21,43 @@
         main {
             max-width: 600px;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 2rem 1.5rem 3rem;
             min-height: 100vh;
         }
 
         h1 {
             font-size: 2rem;
             font-weight: 700;
-            margin-bottom: 2rem;
+            margin-bottom: 0.75rem;
             letter-spacing: -0.02em;
+        }
+
+        .bio {
+            color: #5c5c5c;
+            font-size: 1rem;
+            max-width: 46ch;
+            margin-bottom: 1.25rem;
+        }
+
+        .socials {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .socials a {
+            color: #5c5c5c;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: underline;
+            text-decoration-color: #d5d3cf;
+            text-underline-offset: 3px;
+        }
+
+        .socials a:hover {
+            color: #2a2a2a;
+            text-decoration-color: #2a2a2a;
         }
 
         nav {
@@ -38,29 +66,168 @@
             gap: 1rem;
         }
 
-        a {
+        @media (min-width: 640px) {
+            nav {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1.25rem;
+            }
+        }
+
+        .card {
             display: block;
-            padding: 1.25rem 1.5rem;
             background-color: white;
             color: #2a2a2a;
             text-decoration: none;
             border-radius: 8px;
-            font-size: 1.125rem;
-            font-weight: 500;
             border: 1px solid #e5e5e5;
-            transition: all 0.2s ease;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
         }
 
-        a:active {
-            background-color: #f0f0f0;
+        .card:active {
             border-color: #2a2a2a;
         }
 
         @media (hover: hover) {
-            a:hover {
-                background-color: #f0f0f0;
+            .card:hover {
                 border-color: #2a2a2a;
             }
+        }
+
+        .card:hover .card-label,
+        .card:active .card-label {
+            background-color: #f0f0f0;
+        }
+
+        .vignette {
+            position: relative;
+            aspect-ratio: 5 / 2;
+            overflow: hidden;
+        }
+
+        .vignette svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .card-label {
+            padding: 1.25rem 1.5rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+        }
+
+        .card-sub {
+            display: block;
+            margin-top: 0.2rem;
+            font-size: 0.8125rem;
+            font-weight: 400;
+            color: #8a8a8a;
+        }
+
+        /* ---- Meridian GP vignette ---- */
+        .vignette-mgp {
+            background: #070707;
+        }
+
+        /* ---- Scoville vignette ---- */
+        .vignette-scoville {
+            background:
+                radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.5), transparent 60%),
+                radial-gradient(1px 1px at 25% 65%, rgba(255,255,255,0.35), transparent 60%),
+                radial-gradient(1px 1px at 40% 15%, rgba(255,255,255,0.45), transparent 60%),
+                radial-gradient(1px 1px at 55% 80%, rgba(255,255,255,0.3), transparent 60%),
+                radial-gradient(1px 1px at 70% 35%, rgba(255,255,255,0.5), transparent 60%),
+                radial-gradient(1px 1px at 82% 60%, rgba(255,255,255,0.35), transparent 60%),
+                radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.4), transparent 60%),
+                radial-gradient(1px 1px at 90% 15%, rgba(255,255,255,0.45), transparent 60%),
+                radial-gradient(1px 1px at 60% 55%, rgba(255,255,255,0.3), transparent 60%),
+                radial-gradient(1px 1px at 33% 40%, rgba(255,255,255,0.4), transparent 60%),
+                radial-gradient(1px 1px at 78% 85%, rgba(255,255,255,0.3), transparent 60%),
+                radial-gradient(1px 1px at 5% 50%, rgba(255,255,255,0.35), transparent 60%),
+                radial-gradient(120% 160% at 68% 28%, #170B33 0%, #0B0518 55%, #07030F 100%);
+        }
+
+        .orbit-wrap {
+            position: absolute;
+            inset: 0;
+        }
+
+        .orbit {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            animation-name: spin;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            animation-play-state: paused;
+        }
+
+        body:not(.page-hidden) .vignette.animate .orbit {
+            animation-play-state: running;
+        }
+
+        .orb {
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .sc-legend {
+            position: absolute;
+            left: 12px;
+            bottom: 12px;
+            width: 40px;
+            height: 3px;
+            border-radius: 2px;
+            background: linear-gradient(90deg, #38BDF8, #818CF8, #E879F9, #FB7185, #FDBA74);
+        }
+
+        .sc-word {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            background: linear-gradient(100deg, #38BDF8, #E879F9 55%, #FDBA74);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .orbit {
+                animation: none !important;
+            }
+        }
+
+        footer.author {
+            margin-top: 2.5rem;
+            text-align: center;
+        }
+
+        footer.author a {
+            color: #8a8a8a;
+            font-size: 0.8125rem;
+            text-decoration: none;
+            letter-spacing: 0.02em;
+        }
+
+        footer.author a:hover {
+            color: #2a2a2a;
+            text-decoration: underline;
         }
     </style>
     <!-- Google Analytics (GA4) -->
@@ -75,10 +242,104 @@
 <body>
     <main>
         <h1>Slags Experiments</h1>
+        <p class="bio">Slags builds small, weird, AI-assisted experiments — 3D race recaps, data galaxies, and whatever else seemed fun to build this week.</p>
+        <div class="socials">
+            <a href="https://github.com/sslagsvol">GitHub</a>
+            <a href="https://www.linkedin.com/in/scottslagsvol/">LinkedIn</a>
+            <a href="https://dribbble.com/scottslags">Dribbble</a>
+            <a href="https://vimeo.com/user8062793">Vimeo</a>
+            <a href="https://scottslags.com">Portfolio</a>
+        </div>
         <nav>
-            <a href="MGP-recap.html">Meridian GP</a>
-            <a href="Scoville Index (Standalone).html">Scoville heat units</a>
+            <a href="MGP-recap.html" class="card">
+                <div class="vignette vignette-mgp" aria-hidden="true">
+                    <svg viewBox="0 0 240 100" preserveAspectRatio="xMidYMid meet">
+                        <path id="mgp-track" d="M 70 12 L 170 12 A 38 38 0 0 1 170 88 L 70 88 A 38 38 0 0 1 70 12 Z" fill="none" stroke="rgba(232,230,225,0.28)" stroke-width="2"></path>
+                        <rect x="116" y="9" width="4" height="6" fill="rgba(232,230,225,0.5)"></rect>
+                        <circle r="3" fill="#ff2a1e">
+                            <animateMotion dur="6s" begin="0s" repeatCount="indefinite">
+                                <mpath href="#mgp-track"></mpath>
+                            </animateMotion>
+                        </circle>
+                        <circle r="2.6" fill="rgba(232,230,225,0.6)">
+                            <animateMotion dur="6.7s" begin="-1.4s" repeatCount="indefinite">
+                                <mpath href="#mgp-track"></mpath>
+                            </animateMotion>
+                        </circle>
+                        <circle r="2.4" fill="rgba(232,230,225,0.4)">
+                            <animateMotion dur="7.4s" begin="-3.1s" repeatCount="indefinite">
+                                <mpath href="#mgp-track"></mpath>
+                            </animateMotion>
+                        </circle>
+                        <text x="14" y="18" font-family="ui-monospace, monospace" font-size="8" letter-spacing="1" fill="#65635e">LAP 07/45</text>
+                    </svg>
+                </div>
+                <div class="card-label">Meridian GP<span class="card-sub">3D race recap</span></div>
+            </a>
+            <a href="Scoville Index (Standalone).html" class="card">
+                <div class="vignette vignette-scoville" aria-hidden="true">
+                    <div class="orbit-wrap">
+                        <div class="orbit" style="animation-duration:8s;">
+                            <div class="orb" style="width:12px;height:12px;margin:-6px 0 0 -6px;transform:translate(16px,0);background:#FDBA74;box-shadow:0 0 10px 3px rgba(253,186,116,0.55);"></div>
+                        </div>
+                        <div class="orbit" style="animation-duration:9.5s;animation-delay:-2s;">
+                            <div class="orb" style="width:10px;height:10px;margin:-5px 0 0 -5px;transform:translate(28px,0);background:#FB7185;box-shadow:0 0 10px 2px rgba(251,113,133,0.5);"></div>
+                        </div>
+                        <div class="orbit" style="animation-duration:11s;animation-delay:-4.5s;">
+                            <div class="orb" style="width:8px;height:8px;margin:-4px 0 0 -4px;transform:translate(40px,0);background:#E879F9;box-shadow:0 0 10px 2px rgba(232,121,249,0.5);"></div>
+                        </div>
+                        <div class="orbit" style="animation-duration:12.5s;animation-delay:-6s;">
+                            <div class="orb" style="width:7px;height:7px;margin:-3.5px 0 0 -3.5px;transform:translate(54px,0);background:#818CF8;box-shadow:0 0 9px 2px rgba(129,140,248,0.45);"></div>
+                        </div>
+                        <div class="orbit" style="animation-duration:14s;animation-delay:-9s;">
+                            <div class="orb" style="width:6px;height:6px;margin:-3px 0 0 -3px;transform:translate(66px,0);background:#38BDF8;box-shadow:0 0 8px 2px rgba(56,189,248,0.45);"></div>
+                        </div>
+                        <div class="orbit" style="animation-duration:16s;animation-delay:-12s;">
+                            <div class="orb" style="width:5px;height:5px;margin:-2.5px 0 0 -2.5px;transform:translate(76px,0);background:#38BDF8;box-shadow:0 0 8px 2px rgba(56,189,248,0.4);"></div>
+                        </div>
+                    </div>
+                    <div class="sc-word">SCOVILLE³</div>
+                    <div class="sc-legend"></div>
+                </div>
+                <div class="card-label">Scoville heat units<span class="card-sub">Heat galaxy explorer</span></div>
+            </a>
         </nav>
+        <footer class="author">
+            <a href="index.html">made with ai by Slags</a>
+        </footer>
     </main>
+    <script>
+      (function () {
+        var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function setSvgPlaying(vignette, playing) {
+          var svg = vignette.querySelector('svg');
+          if (!svg || typeof svg.pauseAnimations !== 'function') return;
+          if (playing) svg.unpauseAnimations(); else svg.pauseAnimations();
+        }
+
+        var vignettes = document.querySelectorAll('.vignette');
+        vignettes.forEach(function (v) { setSvgPlaying(v, false); });
+
+        if (reduceMotion) return; // leave everything paused/static
+
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            var v = entry.target;
+            var playing = entry.isIntersecting && !document.hidden;
+            v.classList.toggle('animate', playing);
+            setSvgPlaying(v, playing);
+          });
+        }, { threshold: 0.2 });
+        vignettes.forEach(function (v) { io.observe(v); });
+
+        document.addEventListener('visibilitychange', function () {
+          document.body.classList.toggle('page-hidden', document.hidden);
+          vignettes.forEach(function (v) {
+            setSvgPlaying(v, !document.hidden && v.classList.contains('animate'));
+          });
+        });
+      })();
+    </script>
 </body>
 </html>
